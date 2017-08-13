@@ -1,5 +1,6 @@
 module React.DOM.Props where
 
+import DOM.HTML.Types (HTMLElement)
 import React (Event, EventHandlerContext, KeyboardEvent, MouseEvent, handle)
 
 foreign import data Props :: Type
@@ -299,6 +300,11 @@ readOnly = unsafeMkProps "readOnly"
 
 rel :: String -> Props
 rel = unsafeMkProps "rel"
+
+-- | MODIFIED
+ref :: ∀ forall eff props state result.
+  (HTMLElement -> EventHandlerContext eff props state result) -> Props
+ref f = unsafeMkProps "ref" (handle f)
 
 required :: Boolean -> Props
 required = unsafeMkProps "required"
