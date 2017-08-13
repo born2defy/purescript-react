@@ -68,12 +68,18 @@ module React
 
   , Children
   , childrenToArray
+
+  -- | MODIFIED
+  , setRef
+  , extractRefs
   ) where
 
 import Prelude
 
 import Control.Monad.Eff (kind Effect, Eff)
 import Control.Monad.Eff.Uncurried (EffFn2, runEffFn2)
+import DOM.HTML.Types (HTMLElement)
+import Data.Nullable (Nullable)
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | Name of a tag.
@@ -146,21 +152,23 @@ type KeyboardEvent =
   , which    :: Int
   }
 
+-- | MODIFIED to allow Refs Access
 -- | A function which handles events.
 type EventHandlerContext eff props state result =
   Eff
     ( props :: ReactProps
-    , refs :: ReactRefs ReadOnly
+    , refs :: ReactRefs ReadWrite  -- MODIFIED to ReadWrite
     , state :: ReactState ReadWrite
     | eff
     ) result
 
+-- | MODIFIED to allow REFS access
 -- | A render function.
 type Render props state eff =
   ReactThis props state ->
   Eff
     ( props :: ReactProps
-    , refs :: ReactRefs Disallowed
+    , refs :: ReactRefs ReadWrite  -- MODIFIED to ReadWrite
     , state :: ReactState ReadOnly
     | eff
     ) ReactElement
@@ -392,3 +400,7 @@ foreign import childrenToArray :: Children -> Array ReactElement
 foreign import preventDefault :: forall eff a. Event -> Eff eff a
 
 foreign import stopPropagation :: forall eff a. Event -> Eff eff a
+
+-- | MODIFIED
+foreign import setRef :: ∀ p s eff. ReactThis p s -> String -> HTMLElement -> Eff (refs :: ReactRefs ReadWrite | eff) Unit
+foreign import extractRefs :: ∀ eff r. Refs -> Eff (refs :: ReactRefs ReadWrite | eff) { | r }

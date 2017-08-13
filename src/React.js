@@ -171,3 +171,20 @@ function stopPropagation(event) {
   return function() { return event.stopPropagation();}
 };
 exports.stopPropagation = stopPropagation;
+
+exports.setRef = function(reactThis){
+  return function(refName){
+    return function(elem){
+      return function(){
+        reactThis.refs[refName] = elem;
+      };
+    };
+  };
+};
+
+
+exports.extractRefs = function(refs){
+  return function(){
+    return refs;
+  };
+};
